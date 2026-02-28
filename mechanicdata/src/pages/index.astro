@@ -1,0 +1,412 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+
+const allCodes = await getCollection('codes');
+const sortedCodes = allCodes.sort((a, b) => a.data.code.localeCompare(b.data.code));
+
+// Grouper par catégorie
+const codesByCategory = sortedCodes.reduce((acc, code) => {
+  const category = code.data.category;
+  if (!acc[category]) {
+    acc[category] = [];
+  }
+  acc[category].push(code);
+  return acc;
+}, {} as Record<string, typeof sortedCodes>);
+---
+
+<Layout 
+  title="MechanicData - Codes défauts OBD-II automobile"
+  description="Guide complet des codes défauts OBD-II : diagnostic, causes, solutions et réparations. Trouvez rapidement l'explication de votre code moteur."
+>
+  <div class="hero">
+    <h1>🔧 MechanicData</h1>
+    <p class="tagline">Votre guide complet des codes défauts OBD-II</p>
+    <p class="subtitle">
+      Comprenez et réparez les problèmes de votre véhicule avec des explications détaillées,
+      des diagnostics pas-à-pas et des solutions concrètes.
+    </p>
+  </div>
+
+  <section class="search-section">
+    <div class="search-box">
+      <input 
+        type="text" 
+        id="codeSearch" 
+        placeholder="Rechercher un code (ex: P0420, P0301...)"
+        aria-label="Rechercher un code OBD"
+      />
+    </div>
+  </section>
+
+  <section class="stats">
+    <div class="stat">
+      <span class="stat-number">{allCodes.length}</span>
+      <span class="stat-label">Codes répertoriés</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">{Object.keys(codesByCategory).length}</span>
+      <span class="stat-label">Catégories</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">100%</span>
+      <span class="stat-label">Gratuit</span>
+    </div>
+  </section>
+
+  <section class="codes-list">
+    <h2>Codes OBD-II populaires</h2>
+    
+    <div class="codes-grid">
+      {sortedCodes.map((code) => (
+        <a href={`/codes/${code.slug}`} class="code-card">
+          <div class="code-card-header">
+            <span class="code-number">{code.data.code}</span>
+            <span class={`severity-indicator severity-${code.data.severity.toLowerCase()}`}>
+              {code.data.severity}
+            </span>
+          </div>
+          <h3>{code.data.title}</h3>
+          <p>{code.data.description}</p>
+          <div class="code-card-footer">
+            <span class="category">{code.data.category}</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="categories">
+    <h2>Par catégorie</h2>
+    <div class="category-grid">
+      {Object.entries(codesByCategory).map(([category, codes]) => (
+        <div class="category-card">
+          <h3>{category}</h3>
+          <p>{codes.length} code{codes.length > 1 ? 's' : ''}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="cta">
+    <h2>Comment utiliser MechanicData ?</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <h3>Scannez votre véhicule</h3>
+        <p>Utilisez une valise de diagnostic OBD-II pour relever le code défaut</p>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <h3>Recherchez le code</h3>
+        <p>Entrez le code dans notre base de données</p>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <h3>Réparez</h3>
+        <p>Suivez nos guides détaillés pour diagnostiquer et réparer</p>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .hero {
+    text-align: center;
+    padding: 4rem 1rem 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .hero h1 {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .tagline {
+    font-size: 1.5rem;
+    color: #374151;
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+    color: #6b7280;
+    line-height: 1.6;
+  }
+
+  .search-section {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+
+  .search-box input {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    transition: all 0.3s;
+  }
+
+  .search-box input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    padding: 2rem 1rem;
+    margin: 2rem 0;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-number {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1e3a8a;
+  }
+
+  .stat-label {
+    display: block;
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+  }
+
+  .codes-list {
+    max-width: 1200px;
+    margin: 4rem auto;
+    padding: 0 1rem;
+  }
+
+  .codes-list h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: #1f2937;
+  }
+
+  .codes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .code-card {
+    padding: 1.5rem;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s;
+  }
+
+  .code-card:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .code-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .code-number {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e3a8a;
+  }
+
+  .severity-indicator {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+  }
+
+  .severity-faible {
+    background: #10b981;
+  }
+
+  .severity-moyen {
+    background: #f59e0b;
+  }
+
+  .severity-élevé {
+    background: #ef4444;
+  }
+
+  .severity-critique {
+    background: #dc2626;
+  }
+
+  .code-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+    color: #1f2937;
+    line-height: 1.3;
+  }
+
+  .code-card p {
+    font-size: 0.9rem;
+    color: #6b7280;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+
+  .code-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .category {
+    font-size: 0.85rem;
+    color: #4b5563;
+    background: #f3f4f6;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+  }
+
+  .categories {
+    max-width: 1200px;
+    margin: 4rem auto;
+    padding: 0 1rem;
+  }
+
+  .categories h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: #1f2937;
+  }
+
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .category-card {
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    border-radius: 8px;
+    text-align: center;
+  }
+
+  .category-card h3 {
+    font-size: 1.1rem;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+  }
+
+  .category-card p {
+    font-size: 0.9rem;
+    color: #6b7280;
+  }
+
+  .cta {
+    max-width: 1000px;
+    margin: 4rem auto;
+    padding: 3rem 1rem;
+    text-align: center;
+  }
+
+  .cta h2 {
+    font-size: 2rem;
+    margin-bottom: 3rem;
+    color: #1f2937;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+
+  .step {
+    text-align: center;
+  }
+
+  .step-number {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: white;
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    border-radius: 50%;
+  }
+
+  .step h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+    color: #1f2937;
+  }
+
+  .step p {
+    color: #6b7280;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 768px) {
+    .hero h1 {
+      font-size: 2.5rem;
+    }
+
+    .tagline {
+      font-size: 1.25rem;
+    }
+
+    .stats {
+      gap: 1.5rem;
+    }
+
+    .codes-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  // Recherche de codes en temps réel
+  const searchInput = document.getElementById('codeSearch') as HTMLInputElement;
+  
+  searchInput?.addEventListener('input', (e) => {
+    const searchTerm = (e.target as HTMLInputElement).value.toLowerCase();
+    const codeCards = document.querySelectorAll('.code-card');
+    
+    codeCards.forEach((card) => {
+      const codeNumber = card.querySelector('.code-number')?.textContent?.toLowerCase() || '';
+      const title = card.querySelector('h3')?.textContent?.toLowerCase() || '';
+      
+      if (codeNumber.includes(searchTerm) || title.includes(searchTerm)) {
+        (card as HTMLElement).style.display = 'block';
+      } else {
+        (card as HTMLElement).style.display = 'none';
+      }
+    });
+  });
+</script>

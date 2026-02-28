@@ -1,0 +1,276 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+}
+
+const { title, description, image = '/og-image.jpg' } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="fr">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="generator" content={Astro.generator} />
+		
+		<!-- SEO Meta Tags -->
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={canonicalURL} />
+		
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content={canonicalURL} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={new URL(image, Astro.site)} />
+		<meta property="og:locale" content="fr_FR" />
+		
+		<!-- Twitter -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:url" content={canonicalURL} />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={new URL(image, Astro.site)} />
+		
+		<!-- Additional SEO -->
+		<meta name="robots" content="index, follow" />
+		<meta name="googlebot" content="index, follow" />
+		<meta name="author" content="MechanicData" />
+		
+		<!-- Schema.org markup -->
+		<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": "WebSite",
+				"name": "MechanicData",
+				"url": "https://taglhydz.github.io/mechanicdata/",
+				"description": "Guide complet des codes défauts OBD-II automobile",
+				"potentialAction": {
+					"@type": "SearchAction",
+					"target": "https://taglhydz.github.io/mechanicdata/?search={search_term_string}",
+					"query-input": "required name=search_term_string"
+				}
+			}
+		</script>
+	</head>
+	<body>
+		<header class="site-header">
+			<nav class="nav-container">
+				<a href="/" class="logo">🔧 MechanicData</a>
+				<div class="nav-links">
+					<a href="/">Accueil</a>
+					<a href="/codes">Codes OBD</a>
+				</div>
+			</nav>
+		</header>
+		
+		<main>
+			<slot />
+		</main>
+		
+		<footer class="site-footer">
+			<div class="footer-content">
+				<div class="footer-section">
+					<h3>MechanicData</h3>
+					<p>Guide complet des codes défauts OBD-II pour diagnostiquer et réparer votre véhicule.</p>
+				</div>
+				
+				<div class="footer-section">
+					<h4>Ressources</h4>
+					<ul>
+						<li><a href="/">Codes OBD-II</a></li>
+						<li><a href="/codes">Toutes les catégories</a></li>
+					</ul>
+				</div>
+				
+				<div class="footer-section">
+					<h4>À propos</h4>
+					<ul>
+						<li><a href="/contact">Contact</a></li>
+						<li><a href="/mentions-legales">Mentions légales</a></li>
+					</ul>
+				</div>
+			</div>
+			
+			<div class="footer-bottom">
+				<p>&copy; {new Date().getFullYear()} MechanicData. Tous droits réservés.</p>
+				<p class="disclaimer">Les informations fournies sont à titre indicatif. Consultez un professionnel pour les réparations complexes.</p>
+			</div>
+		</footer>
+	</body>
+</html>
+
+<style is:global>
+	/* Reset & Base Styles */
+	*,
+	*::before,
+	*::after {
+		box-sizing: border-box;
+		margin: 0;
+		padding: 0;
+	}
+
+	html {
+		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+		scroll-behavior: smooth;
+	}
+
+	body {
+		margin: 0;
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
+		background: #ffffff;
+		color: #1f2937;
+		line-height: 1.6;
+	}
+
+	main {
+		flex: 1;
+	}
+
+	/* Header Styles */
+	.site-header {
+		background: white;
+		border-bottom: 1px solid #e5e7eb;
+		position: sticky;
+		top: 0;
+		z-index: 100;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+	}
+
+	.nav-container {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 1rem 1rem;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.logo {
+		font-size: 1.5rem;
+		font-weight: 700;
+		text-decoration: none;
+		color: #1e3a8a;
+		transition: color 0.3s;
+	}
+
+	.logo:hover {
+		color: #3b82f6;
+	}
+
+	.nav-links {
+		display: flex;
+		gap: 2rem;
+	}
+
+	.nav-links a {
+		text-decoration: none;
+		color: #4b5563;
+		font-weight: 500;
+		transition: color 0.3s;
+	}
+
+	.nav-links a:hover {
+		color: #1e3a8a;
+	}
+
+	/* Footer Styles */
+	.site-footer {
+		background: #1f2937;
+		color: #d1d5db;
+		margin-top: 4rem;
+	}
+
+	.footer-content {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 3rem 1rem 2rem;
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		gap: 2rem;
+	}
+
+	.footer-section h3 {
+		color: white;
+		margin-bottom: 1rem;
+		font-size: 1.25rem;
+	}
+
+	.footer-section h4 {
+		color: white;
+		margin-bottom: 0.75rem;
+		font-size: 1rem;
+	}
+
+	.footer-section p {
+		line-height: 1.6;
+		color: #9ca3af;
+	}
+
+	.footer-section ul {
+		list-style: none;
+	}
+
+	.footer-section ul li {
+		margin-bottom: 0.5rem;
+	}
+
+	.footer-section a {
+		color: #d1d5db;
+		text-decoration: none;
+		transition: color 0.3s;
+	}
+
+	.footer-section a:hover {
+		color: #60a5fa;
+	}
+
+	.footer-bottom {
+		border-top: 1px solid #374151;
+		padding: 1.5rem 1rem;
+		text-align: center;
+		max-width: 1200px;
+		margin: 0 auto;
+	}
+
+	.footer-bottom p {
+		margin: 0.5rem 0;
+		font-size: 0.9rem;
+		color: #9ca3af;
+	}
+
+	.disclaimer {
+		font-size: 0.85rem !important;
+		color: #6b7280 !important;
+	}
+
+	/* Typography */
+	h1, h2, h3, h4, h5, h6 {
+		line-height: 1.2;
+		font-weight: 700;
+	}
+
+	a {
+		color: #3b82f6;
+	}
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		.nav-container {
+			flex-direction: column;
+			gap: 1rem;
+		}
+
+		.nav-links {
+			gap: 1rem;
+		}
+	}
+</style>

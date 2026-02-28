@@ -1,0 +1,305 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const codesEntries = await getCollection('codes');
+  return codesEntries.map(entry => ({
+    params: { code: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+
+const { title, code, description, category, severity, symptoms, causes, solutions, relatedCodes, publishDate } = entry.data;
+---
+
+<Layout 
+  title={`${title} | MechanicData`}
+  description={description}
+>
+  <article class="code-article">
+    <header class="code-header">
+      <div class="breadcrumb">
+        <a href="/">Accueil</a> / <a href="/codes">Codes OBD</a> / {code}
+      </div>
+      
+      <h1>{title}</h1>
+      
+      <div class="code-meta">
+        <span class="code-badge">{code}</span>
+        <span class={`severity-badge severity-${severity.toLowerCase()}`}>{severity}</span>
+        <span class="category-badge">{category}</span>
+      </div>
+      
+      <p class="lead">{description}</p>
+    </header>
+
+    <div class="quick-info">
+      <div class="info-section">
+        <h3>🔍 Symptômes principaux</h3>
+        <ul>
+          {symptoms.map(symptom => <li>{symptom}</li>)}
+        </ul>
+      </div>
+
+      <div class="info-section">
+        <h3>⚠️ Causes courantes</h3>
+        <ul>
+          {causes.map(cause => <li>{cause}</li>)}
+        </ul>
+      </div>
+
+      <div class="info-section">
+        <h3>🔧 Solutions</h3>
+        <ul>
+          {solutions.map(solution => <li>{solution}</li>)}
+        </ul>
+      </div>
+    </div>
+
+    <div class="content">
+      <Content />
+    </div>
+
+    {relatedCodes && relatedCodes.length > 0 && (
+      <aside class="related-codes">
+        <h3>📋 Codes associés</h3>
+        <div class="related-list">
+          {relatedCodes.map(relatedCode => (
+            <a href={`/codes/${relatedCode.toLowerCase()}`} class="related-link">
+              {relatedCode}
+            </a>
+          ))}
+        </div>
+      </aside>
+    )}
+
+    <footer class="article-footer">
+      <p>Dernière mise à jour : {publishDate.toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+    </footer>
+  </article>
+</Layout>
+
+<style>
+  .code-article {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+
+  .breadcrumb {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 1rem;
+  }
+
+  .breadcrumb a {
+    color: #0066cc;
+    text-decoration: none;
+  }
+
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+
+  .code-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #1a1a1a;
+  }
+
+  .code-meta {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+
+  .code-badge,
+  .severity-badge,
+  .category-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .code-badge {
+    background: #1e3a8a;
+    color: white;
+  }
+
+  .severity-badge {
+    color: white;
+  }
+
+  .severity-faible {
+    background: #10b981;
+  }
+
+  .severity-moyen {
+    background: #f59e0b;
+  }
+
+  .severity-élevé {
+    background: #ef4444;
+  }
+
+  .severity-critique {
+    background: #dc2626;
+  }
+
+  .category-badge {
+    background: #e5e7eb;
+    color: #374151;
+  }
+
+  .lead {
+    font-size: 1.15rem;
+    color: #4b5563;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+
+  .quick-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+    padding: 1.5rem;
+    background: #f9fafb;
+    border-radius: 8px;
+  }
+
+  .info-section h3 {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    color: #1f2937;
+  }
+
+  .info-section ul {
+    margin: 0;
+    padding-left: 1.25rem;
+  }
+
+  .info-section li {
+    margin-bottom: 0.5rem;
+    color: #4b5563;
+    font-size: 0.95rem;
+  }
+
+  .content {
+    line-height: 1.8;
+    color: #374151;
+  }
+
+  .content :global(h2) {
+    font-size: 1.75rem;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    color: #1f2937;
+  }
+
+  .content :global(h3) {
+    font-size: 1.35rem;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    color: #374151;
+  }
+
+  .content :global(p) {
+    margin-bottom: 1rem;
+  }
+
+  .content :global(ul),
+  .content :global(ol) {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+  }
+
+  .content :global(li) {
+    margin-bottom: 0.5rem;
+  }
+
+  .content :global(blockquote) {
+    border-left: 4px solid #3b82f6;
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    color: #4b5563;
+    font-style: italic;
+  }
+
+  .content :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+  }
+
+  .content :global(th),
+  .content :global(td) {
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    text-align: left;
+  }
+
+  .content :global(th) {
+    background: #f3f4f6;
+    font-weight: 600;
+  }
+
+  .related-codes {
+    margin-top: 3rem;
+    padding: 1.5rem;
+    background: #eff6ff;
+    border-radius: 8px;
+  }
+
+  .related-codes h3 {
+    margin-bottom: 1rem;
+    color: #1e3a8a;
+  }
+
+  .related-list {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .related-link {
+    padding: 0.5rem 1rem;
+    background: white;
+    color: #1e40af;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 500;
+    border: 1px solid #bfdbfe;
+    transition: all 0.2s;
+  }
+
+  .related-link:hover {
+    background: #1e40af;
+    color: white;
+    border-color: #1e40af;
+  }
+
+  .article-footer {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e5e7eb;
+    color: #6b7280;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 768px) {
+    .code-header h1 {
+      font-size: 1.75rem;
+    }
+
+    .quick-info {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

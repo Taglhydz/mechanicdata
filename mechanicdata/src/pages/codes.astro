@@ -1,0 +1,55 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout 
+  title="Tous les codes OBD-II | MechanicData"
+  description="Liste complète des codes défauts OBD-II avec explications détaillées, diagnostics et solutions."
+>
+  <div class="codes-page">
+    <h1>📚 Tous les codes OBD-II</h1>
+    <p class="intro">
+      Explorez notre base de données complète des codes défauts OBD-II. 
+      Chaque code contient un diagnostic détaillé, les causes probables et les solutions de réparation.
+    </p>
+    
+    <div class="back-link">
+      <a href="/">← Retour à l'accueil</a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .codes-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 4rem 1rem;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #1f2937;
+  }
+
+  .intro {
+    font-size: 1.1rem;
+    color: #6b7280;
+    line-height: 1.8;
+    margin-bottom: 2rem;
+  }
+
+  .back-link {
+    margin-top: 2rem;
+  }
+
+  .back-link a {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .back-link a:hover {
+    text-decoration: underline;
+  }
+</style>
